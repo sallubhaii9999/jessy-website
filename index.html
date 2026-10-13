@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Little Surprise for Jessy</title>
+<style>
+*{box-sizing:border-box}
+:root{--pink:#f7a8c4;--deep:#4b244a;--cream:#fff8f5}
+body{
+ margin:0;min-height:100vh;overflow:hidden;
+ font-family:"Segoe UI",sans-serif;color:var(--deep);
+ background:linear-gradient(135deg,#ffe5ee,#f7dafa,#e5e0ff);
+ display:flex;align-items:center;justify-content:center;
+ padding:20px
+}
+#hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.heart{position:absolute;bottom:-40px;animation:floatUp 9s linear infinite;opacity:.5}
+@keyframes floatUp{to{transform:translateY(-115vh) rotate(35deg);opacity:0}}
+.card{
+ width:min(100%,620px);min-height:420px;position:relative;
+ background:rgba(255,255,255,.78);border:1px solid white;
+ border-radius:28px;padding:clamp(24px,6vw,48px);
+ text-align:center;box-shadow:0 18px 60px #8d4f7630;
+ backdrop-filter:blur(12px);display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:18px
+}
+.moon{font-size:44px}
+h1{font-size:clamp(27px,6vw,39px);margin:0;line-height:1.2}
+p{font-size:17px;line-height:1.8;margin:0;white-space:pre-line}
+button{
+ border:0;border-radius:999px;padding:13px 23px;
+ font-size:15px;font-weight:650;cursor:pointer;
+ transition:transform .2s,box-shadow .2s;
+ touch-action:manipulation
+}
+button:hover{transform:translateY(-2px)}
+.primary{background:#d9568a;color:white;box-shadow:0 7px 18px #d9568a30}
+.secondary{background:#fff0f5;color:#8b3c65;border:1px solid #f3c2d4}
+.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;width:100%;min-height:52px}
+.play-area{width:100%;height:145px;position:relative}
+.dodge{position:absolute;left:58%;top:22px}
+.stay{position:absolute;left:15%;top:22px}
+.activities{width:100%;height:190px;position:relative}
+.activity{
+ position:absolute;width:47%;min-height:66px;
+ display:flex;align-items:center;justify-content:center;
+ padding:12px;border-radius:18px;background:#fff0f5;
+ border:1px solid #f3c2d4;color:#7c355b;
+ box-shadow:0 5px 15px #8d4f7610;font-size:14px
+}
+#walk{left:0;top:0}
+#coffee{right:0;top:0}
+#beer{left:26%;top:105px;background:#d9568a;color:white;border:0}
+.hidden{display:none!important}
+.progress{font-size:12px;letter-spacing:2px;color:#b06b8d}
+#final{background:linear-gradient(160deg,#211b39,#49304f);color:#fff2f8}
+#final h1{color:#ffd4e4}
+#final p{font-size:16px}
+.sparkle{color:#f08db2}
+@media(max-width:420px){
+ .card{min-height:440px;padding:24px 18px}
+ .activities{height:220px}
+ .activity{width:48%;font-size:12px;padding:9px}
+ #beer{left:22%;width:56%;top:120px}
+ .play-area{height:150px}
+}
+</style>
+</head>
+<body>
+<div id="hearts"></div>
+
+<main class="card" id="card">
+ <div class="moon">🌷</div>
+ <div class="progress" id="progress">A LITTLE SURPRISE FOR JESSY</div>
+ <h1 id="heading">Hey Jessy!</h1>
+ <p id="message">I hope you are doing well. 😊</p>
+ <div class="actions" id="nextArea">
+  <button class="primary" id="next">Next →</button>
+ </div>
+</main>
+
+<script>
+const card=document.getElementById("card");
+const heading=document.getElementById("heading");
+const message=document.getElementById("message");
+const progress=document.getElementById("progress");
+const nextArea=document.getElementById("nextArea");
+
+let step=0;
+
+function showStory(){
+ card.classList.remove("final");
+ card.innerHTML=`
+  <div class="moon" id="moon">🌷</div>
+  <div class="progress" id="progress"></div>
+  <h1 id="heading"></h1>
+  <p id="message"></p>
+  <div class="actions" id="nextArea"></div>`;
+ const set=(title,text,label,fn,tag="🌷")=>{
+  card.querySelector(".moon").textContent=tag;
+  card.querySelector("#heading").textContent=title;
+  card.querySelector("#message").textContent=text;
+  card.querySelector("#progress").textContent=`A LITTLE SURPRISE FOR JESSY · ${step+1}`;
+  const area=card.querySelector("#nextArea");
+  area.innerHTML="";
+  const b=document.createElement("button");
+  b.className="primary";b.textContent=label;b.onclick=fn;area.appendChild(b);
+ };
+ if(step===0){
+  set("Hey Jessy!","I hope you are doing well. 😊","Next →",()=>{step++;showStory()});
+ }else if(step===1){
+  set("A little life update...","Susu and I are moving to Malaysia very, very soon! ✈️💗","Next →",()=>{step++;showStory()});
+ }else if(step===2){
+  set("Before I leave...","I'd really love to spend some quality time with you and make a few more beautiful memories together. 🥹💕","Next →",()=>{step++;showStory()});
+ }else if(step===3){
+  card.querySelector(".moon").textContent="💌";
+  card.querySelector("#heading").textContent="Sooo, Jessy...";
+  card.querySelector("#message").textContent="Are you up for a little adventure with me before I leave? 🫶🏻💗";
+  card.querySelector("#progress").textContent="THE BIG QUESTION";
+  const area=card.querySelector("#nextArea");
+  area.innerHTML=`<div class="play-area" id="playArea">
+   <button class="primary stay" id="yes">Yes, absolutely! ❤️</button>
+   <button class="secondary dodge" id="no">Nope! 🙈</button>
+  </div>`;
+  const no=document.getElementById("no"), play=document.getElementById("playArea");
+  function moveNo(){
+   const maxX=Math.max(0,play.clientWidth-no.offsetWidth);
+   const maxY=Math.max(0,play.clientHeight-no.offsetHeight);
+   no.style.left=Math.random()*maxX+"px";
+   no.style.top=Math.random()*maxY+"px";
+   no.textContent=["Too slow! 🙈","Hehe, try again! 💗","Not so easy! 😜"][Math.floor(Math.random()*3)];
+  }
+  no.addEventListener("pointerenter",moveNo);
+  no.addEventListener("pointerdown",e=>{e.preventDefault();moveNo()});
+  document.getElementById("yes").onclick=()=>{step++;showStory()};
+ }else if(step===4){
+  set("HAHAHA, I KNEW IT!","Deep down, I knew you wanted to spend some time with me too! 🤭💗\n\nOkay, Miss Jessy, what kind of night are we planning? 🌙✨","Choose our plan →",()=>{step++;showStory()},"💞");
+ }else if(step===5){
+  card.querySelector(".moon").textContent="🌙";
+  card.querySelector("#heading").textContent="Pick our adventure, Jessy";
+  card.querySelector("#message").textContent="Choose wisely... if you can! 🤭💕";
+  card.querySelector("#progress").textContent="THREE OPTIONS · ONE NIGHT";
+  const area=card.querySelector("#nextArea");
+  area.innerHTML=`<div class="activities" id="activities">
+   <button class="activity" id="walk">🌆 Romantic Evening Walk</button>
+   <button class="activity" id="coffee">☕ Coffee Together</button>
+   <button class="activity" id="beer">🍻 Night Out with Beer</button>
+  </div>`;
+  const box=document.getElementById("activities");
+  function dodge(el){
+   const maxX=Math.max(0,box.clientWidth-el.offsetWidth);
+   const maxY=Math.max(0,box.clientHeight-el.offsetHeight);
+   el.style.left=Math.random()*maxX+"px";
+   el.style.top=Math.random()*maxY+"px";
+  }
+  ["walk","coffee"].forEach(id=>{
+   const el=document.getElementById(id);
+   el.addEventListener("pointerenter",()=>dodge(el));
+   el.addEventListener("pointerdown",e=>{e.preventDefault();dodge(el)});
+  });
+  document.getElementById("beer").onclick=()=>{step++;showStory()};
+ }else if(step===6){
+  card.classList.add("final");
+  card.innerHTML=`
+   <div class="moon">🌙✨</div>
+   <div class="progress">ONE LAST THING, JESSY...</div>
+   <h1>Let's make it a night to remember.</h1>
+   <p>Every day isn't Sunday, and we don't get endless chances to make memories.
+
+Time waits for nobody, Jessy 🥀
+
+Life's too short for excuses. So, let's dare a little, live a little, laugh a lot, and make some of the BEST memories together before I leave.
+
+Let's make it a night to remember.
+
+Deal, Jessy ??</p>
+   <div class="sparkle">♡ &nbsp; ♡ &nbsp; ♡</div>
+   <button class="secondary" id="again">Read it again 💌</button>`;
+  document.getElementById("again").onclick=()=>{step=0;showStory()};
+ }
+}
+function createHearts(){
+ const wrap=document.getElementById("hearts");
+ for(let i=0;i<18;i++){
+  const h=document.createElement("span");
+  h.className="heart";
+  h.textContent=["♡","♥","✧","🌸"][i%4];
+  h.style.left=Math.random()*100+"%";
+  h.style.animationDelay=Math.random()*9+"s";
+  h.style.animationDuration=(7+Math.random()*7)+"s";
+  h.style.fontSize=(14+Math.random()*20)+"px";
+  wrap.appendChild(h);
+ }
+}
+createHearts();
+showStory();
+</script>
+</body>
+</html>
